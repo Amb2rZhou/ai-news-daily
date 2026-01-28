@@ -1,0 +1,95 @@
+# AI News Daily Digest - News Source Configuration
+
+rss_feeds:
+  - name: TechCrunch AI
+    url: https://techcrunch.com/category/artificial-intelligence/feed/
+    category: auto
+
+  - name: The Verge AI
+    url: https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
+    category: auto
+
+  - name: MIT Technology Review
+    url: https://www.technologyreview.com/feed/
+    category: auto
+
+  - name: OpenAI Blog
+    url: https://openai.com/blog/rss.xml
+    category: auto
+
+  - name: Google AI Blog
+    url: https://blog.google/technology/ai/rss/
+    category: auto
+
+  - name: Hacker News (AI)
+    url: https://hnrss.org/newest?q=AI+OR+LLM+OR+GPT+OR+artificial+intelligence&count=30
+    category: auto
+
+  - name: ArsTechnica AI
+    url: https://feeds.arstechnica.com/arstechnica/technology-lab
+    category: auto
+
+web_scrape_targets:
+  - name: 36kr AI
+    url: https://36kr.com/information/AI/
+    selector: "a.article-item-title"
+    base_url: https://36kr.com
+
+  - name: 量子位
+    url: https://www.qbitai.com/
+    selector: "h4.post-title a"
+    base_url: https://www.qbitai.com
+
+  - name: 机器之心
+    url: https://www.jiqizhixin.com/
+    selector: "a.article-title"
+    base_url: https://www.jiqizhixin.com
+
+# Keywords for categorization
+categories:
+  技术进展:
+    - research
+    - paper
+    - model
+    - benchmark
+    - training
+    - 论文
+    - 模型
+    - 研究
+    - 开源
+    - breakthrough
+  产品发布:
+    - launch
+    - release
+    - announce
+    - product
+    - app
+    - 发布
+    - 上线
+    - 推出
+    - 更新
+    - update
+  大公司动向:
+    - Google
+    - Microsoft
+    - OpenAI
+    - Meta
+    - Apple
+    - Amazon
+    - Anthropic
+    - 谷歌
+    - 微软
+    - 百度
+    - 阿里
+    - 腾讯
+    - 字节
+  投融资:
+    - funding
+    - investment
+    - valuation
+    - IPO
+    - acquisition
+    - 融资
+    - 投资
+    - 估值
+    - 收购

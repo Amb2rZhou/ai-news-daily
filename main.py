@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from email_sender import render_email, send_email
 from news_collector import collect_all
+from news_summarizer import summarize
 
 
 def main():
@@ -24,17 +25,25 @@ def main():
     print("=" * 50)
     print("AI News Daily Digest")
     print("=" * 50)
-    categorized = collect_all(str(config_path))
+    articles = collect_all(str(config_path))
 
-    if not categorized:
+    if not articles:
         print("No news collected today. Skipping email.")
         return
 
-    # Step 2: Render email
-    print("\nRendering email...")
-    html = render_email(categorized, str(template_path))
+    # Step 2: Summarize and aggregate via AI
+    print("\nSummarizing with AI...")
+    events = summarize(articles)
 
-    # Step 3: Send email
+    if not events:
+        print("Failed to summarize news. Skipping email.")
+        return
+
+    # Step 3: Render email
+    print("\nRendering email...")
+    html = render_email(events, str(template_path))
+
+    # Step 4: Send email
     required_env = ["SMTP_SERVER", "SMTP_PORT", "SMTP_USER", "SMTP_PASSWORD", "RECEIVER_EMAIL"]
     missing = [v for v in required_env if not os.environ.get(v)]
     if missing:

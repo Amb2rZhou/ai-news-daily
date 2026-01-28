@@ -111,28 +111,8 @@ def deduplicate(articles, threshold=0.7):
     return unique
 
 
-def categorize(articles, categories):
-    """Categorize articles by matching keywords in title and summary."""
-    categorized = {cat: [] for cat in categories}
-    categorized["其他"] = []
-
-    for article in articles:
-        text = (article["title"] + " " + article.get("summary", "")).lower()
-        matched = False
-        for cat, keywords in categories.items():
-            if any(kw.lower() in text for kw in keywords):
-                categorized[cat].append(article)
-                matched = True
-                break
-        if not matched:
-            categorized["其他"].append(article)
-
-    # Remove empty categories
-    return {cat: arts for cat, arts in categorized.items() if arts}
-
-
 def collect_all(config_path="config.yaml"):
-    """Main collection pipeline: fetch, deduplicate, categorize."""
+    """Main collection pipeline: fetch, deduplicate, return raw articles."""
     config = load_config(config_path)
 
     print("Collecting RSS feeds...")
@@ -149,10 +129,4 @@ def collect_all(config_path="config.yaml"):
     all_articles = deduplicate(all_articles)
     print(f"Total articles after dedup: {len(all_articles)}")
 
-    categories = config.get("categories", {})
-    categorized = categorize(all_articles, categories)
-
-    for cat, arts in categorized.items():
-        print(f"  [{cat}]: {len(arts)} articles")
-
-    return categorized
+    return all_articles

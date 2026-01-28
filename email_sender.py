@@ -10,55 +10,64 @@ CATEGORY_ICONS = {
     "产品发布": "🚀",
     "大公司动向": "🏢",
     "投融资": "💰",
+    "行业观点": "💬",
     "其他": "📌",
 }
 
 
-def render_email(categorized_news, template_path="email_template.html"):
-    """Render categorized news into the HTML email template."""
+def render_email(events, template_path="email_template.html"):
+    """Render aggregated events into the HTML email template."""
     template = Path(template_path).read_text(encoding="utf-8")
 
-    total_count = sum(len(arts) for arts in categorized_news.values())
-    category_count = len(categorized_news)
+    event_count = len(events)
     date_str = datetime.now().strftime("%Y年%m月%d日")
 
-    categories_html = ""
-    for cat, articles in categorized_news.items():
-        icon = CATEGORY_ICONS.get(cat, "📰")
-        categories_html += f"""
+    events_html = ""
+    for i, event in enumerate(events, 1):
+        category = event.get("category", "其他")
+        icon = CATEGORY_ICONS.get(category, "📰")
+        summary = event.get("summary", "")
+        sources = event.get("sources", [])
+
+        # Source links
+        source_links = ""
+        for src in sources:
+            title = src.get("title", "")
+            link = src.get("link", "#")
+            source_name = src.get("source", "")
+            source_links += (
+                f'<a href="{link}" style="color:#667eea; text-decoration:none; font-size:12px;" target="_blank">'
+                f'{title}</a>'
+                f'<span style="font-size:11px; color:#aaa;"> [{source_name}]</span><br>'
+            )
+
+        events_html += f"""
 <tr>
-<td style="padding:16px 32px 4px;">
-  <h2 style="margin:0; font-size:16px; color:#333; border-left:3px solid #667eea; padding-left:10px;">
-    {icon} {cat}
-    <span style="font-size:12px; color:#999; font-weight:normal; margin-left:6px;">({len(articles)})</span>
-  </h2>
+<td style="padding:16px 32px;">
+  <div style="margin-bottom:4px;">
+    <span style="font-size:13px; color:#667eea; font-weight:600;">{icon} {category}</span>
+  </div>
+  <p style="margin:0 0 8px; color:#333; font-size:14px; line-height:1.6;">
+    {summary}
+  </p>
+  <div style="padding-left:8px; border-left:2px solid #eee;">
+    {source_links}
+  </div>
 </td>
 </tr>"""
-        for art in articles:
-            source = art.get("source", "")
-            summary = art.get("summary", "")
-            link = art.get("link", "#")
-            title = art.get("title", "Untitled")
 
-            summary_html = ""
-            if summary:
-                summary_html = f'<p style="margin:4px 0 0; color:#777; font-size:12px; line-height:1.5;">{summary}</p>'
-
-            categories_html += f"""
+        # Add separator between events (except last)
+        if i < event_count:
+            events_html += """
 <tr>
-<td style="padding:6px 32px 6px 48px;">
-  <a href="{link}" style="color:#333; text-decoration:none; font-size:14px; line-height:1.5;" target="_blank">
-    {title}
-  </a>
-  <span style="font-size:11px; color:#aaa; margin-left:6px;">[{source}]</span>
-  {summary_html}
+<td style="padding:0 32px;">
+  <hr style="border:none; border-top:1px solid #f0f0f0; margin:0;">
 </td>
 </tr>"""
 
     html = template.replace("{{date}}", date_str)
-    html = html.replace("{{total_count}}", str(total_count))
-    html = html.replace("{{category_count}}", str(category_count))
-    html = html.replace("{{categories_html}}", categories_html)
+    html = html.replace("{{event_count}}", str(event_count))
+    html = html.replace("{{events_html}}", events_html)
 
     return html
 

@@ -78,7 +78,7 @@ def send_email(html_content, subject=None):
     smtp_port = int(os.environ.get("SMTP_PORT", "465"))
     smtp_user = os.environ["SMTP_USER"]
     smtp_password = os.environ["SMTP_PASSWORD"]
-    receiver = os.environ["RECEIVER_EMAIL"]
+    receivers = [r.strip() for r in os.environ["RECEIVER_EMAIL"].split(",")]
 
     if subject is None:
         subject = f"AI News Daily Digest - {datetime.now().strftime('%Y-%m-%d')}"
@@ -86,20 +86,20 @@ def send_email(html_content, subject=None):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = smtp_user
-    msg["To"] = receiver
+    msg["To"] = ", ".join(receivers)
 
     msg.attach(MIMEText(html_content, "html", "utf-8"))
 
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_server, smtp_port, timeout=30) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [receiver], msg.as_string())
+            server.sendmail(smtp_user, receivers, msg.as_string())
     else:
         with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [receiver], msg.as_string())
+            server.sendmail(smtp_user, receivers, msg.as_string())
 
-    print(f"Email sent to {receiver}")
+    print(f"Email sent to {', '.join(receivers)}")
